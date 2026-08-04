@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>たかねこ用語辞典 ＆ アーカイブ</title>
+    <style>
+        /* =========================================
+           フォント設定（指定のフォントファイルを参照）
+           ========================================= */
+        @font-face {
+            font-family: 'Keifont';
+            src: url('keifont.ttf') format('truetype'); 
+        }
+
+        /* =========================================
+           基本カラーとデザイン（白黒の明るいデザイン）
+           ========================================= */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #222222;
+            --border-color: #222222;
+            --hover-bg: #f8f8f8;
+        }
+
+        body {
+            font-family: 'Keifont', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-y: scroll;
+        }
+
+        /* ヘッダー */
+        header {
+            background-color: var(--bg-color);
+            border-bottom: 3px solid var(--border-color);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            /* ヘッダー出現アニメーション */
+            animation: slideDown 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        /* タブ切り替えボタン */
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            padding: 8px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-family: inherit;
+        }
+
+        /* ボタンホバー・アクティブ時のアニメーション */
+        .tab-btn.active, .tab-btn:hover {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.2);
+        }
+
+        /* メインコンテンツエリア */
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-section {
+            display: none;
+        }
+
+        /* ページ切り替え時のアニメーション */
+        .page-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        /* =========================================
+           カードデザインとアニメーション
+           ========================================= */
+        .card {
+            background-color: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 4px 4px 0px var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* 初期状態は透明（アニメーションで表示） */
+            transform: translateY(20px);
+            animation: fadeUp 0.5s ease forwards;
+        }
+
+        /* カードホバー時の浮き上がり */
+        .card:hover {
+            transform: translate(-2px, -2px) !important;
+            box-shadow: 6px 6px 0px var(--border-color);
+        }
+
+        /* クリックできるヘッダー部分 */
+        .card-header {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+            border-radius: 8px;
+        }
+
+        .card-header:hover {
+            background-color: var(--hover-bg);
+        }
+
+        /* タイトル・日付テキスト */
+        .term-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .archive-basic-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .archive-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .archive-date {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 開閉用の矢印アニメーション */
+        .toggle-icon {
+            font-size: 16px;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.26, 1.55);
+        }
+
+        .card.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* =========================================
+           詳細エリアのなめらかなアコーディオン開閉
+           ========================================= */
+        .details-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.4s ease-out;
+            border-top: 0px dashed #ddd;
+        }
+
+        .card.open .details-wrapper {
+            grid-template-rows: 1fr;
+            border-top: 2px dashed #ddd;
+        }
+
+        .details-inner {
+            overflow: hidden;
+            padding: 0 20px;
+        }
+
+        .details-content {
+            padding: 20px 0;
+        }
+
+        /* =========================================
+           アクションボタンのアニメーション
+           ========================================= */
+        .action-btn {
+            display: inline-block;
+            background-color: var(--text-color);
+            color: var(--bg-color);
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+
+        /* ボタンホバー時の背景塗りつぶしアニメーション */
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 0%; height: 100%;
+            background-color: var(--bg-color);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .action-btn:hover::before {
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            color: var(--text-color);
+        }
+
+        .clip-container {
+            text-align: center;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .clip-time {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        /* キーフレーム定義 */
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>たかねこ辞典＆アーカイブ</h1>
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('glossary')">用語辞典</button>
+            <button class="tab-btn" onclick="switchTab('archive')">アーカイブ</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- 用語辞典 -->
+        <section id="glossary" class="page-section active">
+            <div id="terms-container"></div>
+        </section>
+
+        <!-- アーカイブ -->
+        <section id="archive" class="page-section">
+            <div id="archives-container"></div>
+        </section>
+    </main>
+
+    <script>
+        /* ===================================================================
+           【データ更新エリア】
+           ここから下のデータを追加・変更するだけでサイトに反映されます
+           =================================================================== */
+
+        // ▼ 用語辞典のデータ
+        const termsData = [
+            {
+                term: "こんにちわんこそば",
+                explanation: "昔、たかねこちゃんねるで使われた挨拶。現在では「初見です」が主流となっており、死語となってしまった",
+                streamName: "(2年前の活動休止前のすべての動画)",
+                clipUrl: "", 
+                clipSeconds: ""
+            },
+            {
+                term: "初見さよならトーク",
+                explanation: "初見さんが来た時、初見さんをさよならするようなトークをしてしまい、視聴者の人からツッコミを受けこの言葉ができた。ただいまは使用頻度が減少している。",
+                streamName: "【リハビリ6日目】めっちゃカメレオン【隠れるゲーム】",
+                clipUrl: "https://youtu.be/BaTDd90cQzw?si=8wWJ7wK3uy8UoEo2", // 切り抜き動画がない場合は空にするだけでボタンが消えます
+                clipSeconds: "08:00"
+            }
+        ];
+
+        // ▼ アーカイブのデータ（シンプル版）
+        const archivesData = [
+            {
+                title: "【リハビリ13日目】めっちゃカメレオン【隠れるゲーム】",
+                date: "2026-08-03",
+                game: "めっちゃカメレオン",
+                streamUrl: "https://www.youtube.com/live/WcNZdZSC3Ec?si=36QJPgFNf2uVtlTo"
+            },
+            {
+                title: "【リハビリ12日目】めっちゃカメレオン【隠れるゲーム】",
+                date: "2026-08-02",
+                game: "めっちゃカメレオン",
+                streamUrl: "https://www.youtube.com/live/1wYXy5finCs?si=ZXeaLFAYjtNz3M-y"
+            }
+        ];
+
+        /* ===================================================================
+           【システム処理エリア】
+           =================================================================== */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTerms();
+            renderArchives();
+        });
+
+        // タブ切り替え処理
+        function switchTab(tabId) {
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // 用語辞典を描画する関数
+        function renderTerms() {
+            const container = document.getElementById('terms-container');
+            container.innerHTML = termsData.map((data, index) => {
+                // アニメーションを順番に発火させるための遅延（ディレイ）時間
+                const delay = index * 0.1;
+                
+                const clipButtonHtml = data.clipUrl ? `
+                    <div class="clip-container">
+                        <a href="${data.clipUrl}" target="_blank" class="action-btn">切り抜き動画を見る</a>
+                        <span class="clip-time">(${data.clipSeconds})</span>
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="card" style="animation-delay: ${delay}s">
+                        <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+                            <span class="term-title">${data.term}</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="details-wrapper">
+                            <div class="details-inner">
+                                <div class="details-content">
+                                    <p><strong>説明：</strong><br>${data.explanation}</p>
+                                    <p><strong>登場した配信：</strong> ${data.streamName}</p>
+                                    ${clipButtonHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // アーカイブを描画する関数
+        function renderArchives() {
+            const container = document.getElementById('archives-container');
+            container.innerHTML = archivesData.map((data, index) => {
+                const delay = index * 0.1;
+                return `
+                    <div class="card" style="animation-delay: ${delay}s">
+                        <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+                            <div class="archive-basic-info">
+                                <span class="archive-title">${data.title}</span>
+                                <span class="archive-date">${data.date}</span>
+                            </div>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="details-wrapper">
+                            <div class="details-inner">
+                                <div class="details-content">
+                                    <p><strong>ゲーム名：</strong> ${data.game}</p>
+                                    <div style="text-align: center; margin-top: 20px;">
+                                        <a href="${data.streamUrl}" target="_blank" class="action-btn">本編配信を見に行く</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
