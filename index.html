@@ -14,13 +14,24 @@
         }
 
         /* =========================================
-           基本カラーとデザイン（白黒の明るいデザイン）
+           基本カラーとデザイン（CSS変数）
            ========================================= */
         :root {
+            /* ライトモード（デフォルト） */
             --bg-color: #ffffff;
             --text-color: #222222;
             --border-color: #222222;
             --hover-bg: #f8f8f8;
+            --card-bg: #ffffff;
+        }
+
+        /* ダークモード時のカラー設定 */
+        body.dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --border-color: #f0f0f0;
+            --hover-bg: #2a2a2a;
+            --card-bg: #222222;
         }
 
         body {
@@ -31,6 +42,7 @@
             padding: 0;
             line-height: 1.6;
             overflow-y: scroll;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* ヘッダー */
@@ -39,13 +51,21 @@
             border-bottom: 3px solid var(--border-color);
             padding: 15px 20px;
             display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            /* ヘッダー出現アニメーション */
             animation: slideDown 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         header h1 {
@@ -54,10 +74,30 @@
             letter-spacing: 1px;
         }
 
+        /* テーマ切り替えボタン */
+        .theme-toggle-btn {
+            background: none;
+            border: 2px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 50px;
+            padding: 5px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+        }
+
         /* タブ切り替えボタン */
         .tab-nav {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
@@ -73,7 +113,6 @@
             font-family: inherit;
         }
 
-        /* ボタンホバー・アクティブ時のアニメーション */
         .tab-btn.active, .tab-btn:hover {
             background-color: var(--text-color);
             color: var(--bg-color);
@@ -92,7 +131,6 @@
             display: none;
         }
 
-        /* ページ切り替え時のアニメーション */
         .page-section.active {
             display: block;
             animation: fadeIn 0.4s ease forwards;
@@ -102,24 +140,22 @@
            カードデザインとアニメーション
            ========================================= */
         .card {
-            background-color: var(--bg-color);
+            background-color: var(--card-bg);
             border: 2px solid var(--border-color);
             border-radius: 10px;
             margin-bottom: 20px;
             box-shadow: 4px 4px 0px var(--border-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            opacity: 0; /* 初期状態は透明（アニメーションで表示） */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            opacity: 0;
             transform: translateY(20px);
             animation: fadeUp 0.5s ease forwards;
         }
 
-        /* カードホバー時の浮き上がり */
         .card:hover {
             transform: translate(-2px, -2px) !important;
             box-shadow: 6px 6px 0px var(--border-color);
         }
 
-        /* クリックできるヘッダー部分 */
         .card-header {
             padding: 20px;
             cursor: pointer;
@@ -134,29 +170,31 @@
             background-color: var(--hover-bg);
         }
 
-        /* タイトル・日付テキスト */
-        .term-title {
+        /* テキスト系 */
+        .term-title, .archive-title {
             font-size: 20px;
             font-weight: bold;
         }
-
+        
         .archive-basic-info {
             display: flex;
             flex-direction: column;
         }
-        
+
         .archive-title {
-            font-size: 20px;
-            font-weight: bold;
             margin-bottom: 4px;
         }
 
         .archive-date {
             font-size: 14px;
-            color: #666;
+            color: #777;
+        }
+        
+        body.dark-mode .archive-date {
+            color: #aaa;
         }
 
-        /* 開閉用の矢印アニメーション */
+        /* 開閉用の矢印 */
         .toggle-icon {
             font-size: 16px;
             transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.26, 1.55);
@@ -166,19 +204,17 @@
             transform: rotate(180deg);
         }
 
-        /* =========================================
-           詳細エリアのなめらかなアコーディオン開閉
-           ========================================= */
+        /* 詳細エリアのアコーディオン */
         .details-wrapper {
             display: grid;
             grid-template-rows: 0fr;
             transition: grid-template-rows 0.4s ease-out;
-            border-top: 0px dashed #ddd;
+            border-top: 0px dashed var(--border-color);
         }
 
         .card.open .details-wrapper {
             grid-template-rows: 1fr;
-            border-top: 2px dashed #ddd;
+            border-top: 2px dashed var(--border-color);
         }
 
         .details-inner {
@@ -191,7 +227,41 @@
         }
 
         /* =========================================
-           アクションボタンのアニメーション
+           たかねこについて (About) ページ専用
+           ========================================= */
+        .about-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .about-icon {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--border-color);
+            margin-bottom: 20px;
+            object-fit: cover;
+            background-color: var(--hover-bg);
+        }
+
+        .about-description {
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.8;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .links-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* =========================================
+           アクションボタン
            ========================================= */
         .action-btn {
             display: inline-block;
@@ -211,7 +281,6 @@
             transition: color 0.3s ease;
         }
 
-        /* ボタンホバー時の背景塗りつぶしアニメーション */
         .action-btn::before {
             content: '';
             position: absolute;
@@ -239,9 +308,13 @@
         .clip-time {
             display: block;
             font-size: 13px;
-            color: #555;
+            color: #777;
             margin-top: 5px;
             font-weight: bold;
+        }
+
+        body.dark-mode .clip-time {
+            color: #aaa;
         }
 
         /* キーフレーム定義 */
@@ -261,10 +334,14 @@
 <body>
 
     <header>
-        <h1>たかねこ辞典＆アーカイブ</h1>
+        <div class="header-left">
+            <h1>たかねこ辞典＆アーカイブ</h1>
+            <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()">🌙 ダーク</button>
+        </div>
         <div class="tab-nav">
             <button class="tab-btn active" onclick="switchTab('glossary')">用語辞典</button>
             <button class="tab-btn" onclick="switchTab('archive')">アーカイブ</button>
+            <button class="tab-btn" onclick="switchTab('about')">たかねこについて</button>
         </div>
     </header>
 
@@ -277,6 +354,29 @@
         <!-- アーカイブ -->
         <section id="archive" class="page-section">
             <div id="archives-container"></div>
+        </section>
+
+        <!-- たかねこについて -->
+        <section id="about" class="page-section">
+            <div class="card" style="animation-delay: 0s;">
+                <div class="about-container">
+                    <!-- ▼ アイコン画像のURLを src="" の中に入れてください -->
+                    <img src="https://yt3.googleusercontent.com/rFcbY_IirXgGmoGlJAWiF_E_LFM2z61x5euwBe3Z3OXh1goK98x-I9e85DcWuEqPRPv8hH7h5BM=s160-c-k-c0x00ffffff-no-rj" alt="アイコン" class="about-icon">
+                    
+                    <h2 style="margin-top: 0;">たかねこ</h2>
+                    
+                    <!-- ▼ プロフィールや説明文をここに書きます -->
+                    <div class="about-description">
+                        ホラー嫌いでバカゲー好きのたかねこ🐈趣味でお酒飲みながらのんびりゲーム実況やってます| ε:)_</div>
+
+                    <!-- ▼ 各リンク先のURLを href="" の中に入れてください -->
+                    <div class="links-wrapper">
+                        <a href="https://www.youtube.com/@takaneko_ch" target="_blank" class="action-btn">YouTube</a>
+                        <a href="https://www.tiktok.com/@takaneko_ch?is_from_webapp=1&sender_device=pc" target="_blank" class="action-btn">TikTok</a>
+                        <a href="https://discord.com/invite/S4zCxsSaS" target="_blank" class="action-btn">Discord</a>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
@@ -299,23 +399,25 @@
                 term: "初見さよならトーク",
                 explanation: "初見さんが来た時、初見さんをさよならするようなトークをしてしまい、視聴者の人からツッコミを受けこの言葉ができた。ただいまは使用頻度が減少している。",
                 streamName: "【リハビリ6日目】めっちゃカメレオン【隠れるゲーム】",
-                clipUrl: "https://youtu.be/BaTDd90cQzw?si=8wWJ7wK3uy8UoEo2", // 切り抜き動画がない場合は空にするだけでボタンが消えます
+                clipUrl: "https://youtu.be/BaTDd90cQzw?si=8wWJ7wK3uy8UoEo2", 
                 clipSeconds: "08:00"
             }
         ];
 
-        // ▼ アーカイブのデータ（シンプル版）
+        // ▼ アーカイブのデータ
         const archivesData = [
             {
                 title: "【リハビリ13日目】めっちゃカメレオン【隠れるゲーム】",
                 date: "2026-08-03",
                 game: "めっちゃカメレオン",
+                explanation: "13日目のリハビリ配信。", // 追加：アーカイブの説明文
                 streamUrl: "https://www.youtube.com/live/WcNZdZSC3Ec?si=36QJPgFNf2uVtlTo"
             },
             {
                 title: "【リハビリ12日目】めっちゃカメレオン【隠れるゲーム】",
                 date: "2026-08-02",
                 game: "めっちゃカメレオン",
+                explanation: "12日目のリハビリ配信。", // 追加：アーカイブの説明文
                 streamUrl: "https://www.youtube.com/live/1wYXy5finCs?si=ZXeaLFAYjtNz3M-y"
             }
         ];
@@ -327,7 +429,33 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderTerms();
             renderArchives();
+            loadTheme(); // 保存されたテーマ（ダーク/ライト）を読み込む
         });
+
+        // テーマ（ダークモード）切り替え処理
+        function toggleTheme() {
+            const body = document.body;
+            const btn = document.getElementById('theme-toggle');
+            
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                btn.textContent = '☀️ ライト';
+                localStorage.setItem('theme', 'dark'); // 状態を保存
+            } else {
+                btn.textContent = '🌙 ダーク';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // 保存されたテーマを適用する処理
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('theme-toggle').textContent = '☀️ ライト';
+            }
+        }
 
         // タブ切り替え処理
         function switchTab(tabId) {
@@ -342,9 +470,7 @@
         function renderTerms() {
             const container = document.getElementById('terms-container');
             container.innerHTML = termsData.map((data, index) => {
-                // アニメーションを順番に発火させるための遅延（ディレイ）時間
                 const delay = index * 0.1;
-                
                 const clipButtonHtml = data.clipUrl ? `
                     <div class="clip-container">
                         <a href="${data.clipUrl}" target="_blank" class="action-btn">切り抜き動画を見る</a>
@@ -377,6 +503,9 @@
             const container = document.getElementById('archives-container');
             container.innerHTML = archivesData.map((data, index) => {
                 const delay = index * 0.1;
+                // explanationが無い場合のエラー防止
+                const descText = data.explanation ? data.explanation : "説明はありません。";
+
                 return `
                     <div class="card" style="animation-delay: ${delay}s">
                         <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
@@ -390,6 +519,7 @@
                             <div class="details-inner">
                                 <div class="details-content">
                                     <p><strong>ゲーム名：</strong> ${data.game}</p>
+                                    <p><strong>説明：</strong><br>${descText}</p>
                                     <div style="text-align: center; margin-top: 20px;">
                                         <a href="${data.streamUrl}" target="_blank" class="action-btn">本編配信を見に行く</a>
                                     </div>
