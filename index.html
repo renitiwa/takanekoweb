@@ -25,6 +25,9 @@
             --card-bg: #ffffff;
             --live-bg: #fff5f5;
             --live-border: #e60000;
+            /* カスタムプレイヤー用 */
+            --player-bg: #f0f0f0;
+            --control-bg: #ffffff;
         }
 
         /* ダークモード時のカラー設定 */
@@ -36,6 +39,9 @@
             --card-bg: #222222;
             --live-bg: #3a1c1c;
             --live-border: #ff4d4d;
+            /* カスタムプレイヤー用 */
+            --player-bg: #000000;
+            --control-bg: #222222;
         }
 
         body {
@@ -339,7 +345,128 @@
         }
 
         /* =========================================
-           アクションボタン
+           カスタム動画プレイヤー (たかねこ好きな方へ)
+           ========================================= */
+        .custom-player-wrapper {
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .player-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--text-color);
+            padding-left: 10px;
+        }
+
+        .video-container {
+            background-color: var(--player-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 4px 4px 0px var(--border-color);
+        }
+
+        .video-element {
+            width: 100%;
+            display: block;
+            /* デフォルトのコントロールは消す */
+        }
+
+        .custom-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            background-color: var(--control-bg);
+            padding: 10px 15px;
+            border-top: 2px solid var(--border-color);
+        }
+
+        /* 再生・停止などのボタン */
+        .ctrl-btn {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .ctrl-btn:hover {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        /* 再生バー */
+        .progress-bar-container {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--text-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* 速度調整・リピート設定 */
+        .ctrl-options {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+        }
+
+        .ctrl-select {
+            font-family: inherit;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2px 5px;
+            cursor: pointer;
+        }
+
+        .repeat-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .time-display {
+            font-size: 14px;
+            min-width: 90px;
+            text-align: center;
+        }
+
+        /* =========================================
+           アクションボタン（共通）
            ========================================= */
         .action-btn {
             display: inline-block;
@@ -423,6 +550,7 @@
         <div class="tab-nav">
             <button class="tab-btn active" onclick="switchTab('glossary')">用語辞典</button>
             <button class="tab-btn" onclick="switchTab('archive')">アーカイブ</button>
+            <button class="tab-btn" onclick="switchTab('for_fans')">たかねこ好きな方へ</button>
             <button class="tab-btn" onclick="switchTab('about')">たかねこについて</button>
         </div>
     </header>
@@ -446,6 +574,11 @@
         <!-- アーカイブ -->
         <section id="archive" class="page-section">
             <div id="archives-container"></div>
+        </section>
+
+        <!-- たかねこ好きな方へ (ローカル動画エリア) -->
+        <section id="for_fans" class="page-section">
+            <div id="local-videos-container"></div>
         </section>
 
         <!-- たかねこについて -->
@@ -480,16 +613,29 @@
 
         // ▼ 次のライブ配信の設定
         const nextLiveConfig = {
-            // 配信の日時を設定します。「年/月/日 時:分:秒」の形式で指定してください。
-            // カウントダウンを出したくない場合は "" と空にしてください。
             date: "2026/08/05 22:00:00", 
-            
-            // 配信のタイトル（任意）
             title: "ライブ配信予定",
-            
-            // 「配信を見る」ボタンの飛び先URL（待機所のURLやチャンネルURLなど）
             url: "https://www.youtube.com/live/r_1WFV0R3S4?si=iSMSHvxn89hG_1v-"
         };
+
+        // ▼ たかねこ好きな方へ (ローカル動画データ)
+        // ここにファイル名（1.mp4, 2.mp4...）とタイトルを追加していくと動画が増えます。
+        // 動画ファイルは、このindex.htmlと同じフォルダに置いてください。
+        const videosData = [
+            {
+                filename: "1.mp4",
+                title: "ぶぉん！"
+            },
+            {
+                filename: "2.mp4",
+                title: "いたぁい♡"
+            },
+            // 動画を増やす場合は、以下のようにコピペして追加してください
+            // {
+            //     filename: "3.mp4",
+            //     title: "新しい動画のタイトル"
+            // },
+        ];
 
 
         // ▼ 用語辞典のデータ
@@ -651,70 +797,7 @@
                 game: "めっちゃカメレオン",
                 explanation: "リハビリ配信1日目。",
                 streamUrl: "https://www.youtube.com/live/QAAByIx1nWg?si=NvmF2tkF-V9B-YAO"
-            },
-            {
-                title: "【バカゲー⁉️】カロリーメイトになって栄養を届けるゲーム【Calorie Mate LIQUID FOR GAME CREATORS】",
-                date: "2024-09-12",
-                game: "Calorie Mate LIQUID FOR GAME CREATORS",
-                explanation: "活動休止前の配信。自らがカロリーメイトになって人間に飲んでもらうという強烈なバカゲーをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=7Yt4EBpW0eY"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】名古屋市港区～昭和区",
-                date: "2024-03-01",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。ご当地ネタや愛知あるあるが楽しめます。",
-                streamUrl: "https://www.youtube.com/watch?v=35DzSoiscNE"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】知立市＆刈谷市～名古屋市守山区まで",
-                date: "2024-01-13",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=jdzmzhggg0Q"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】幸田町～高浜市まで",
-                date: "2023-12-21",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=ToNk1D2Bb4Y"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】田原市～豊橋市まで",
-                date: "2023-11-27",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=g9_QvxQD4Jo"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】蟹江町～一宮市まで",
-                date: "2023-11-22",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=oTi29OjKL0E"
-            },
-            {
-                title: "北海道消滅大作戦【三重弁縛り】スイカゲーム⁉️いいえ北海道ゲームです【たかねこのドライブゴーゴー】",
-                date: "2023-11-15",
-                game: "北海道ゲーム",
-                explanation: "まさかの三重弁縛りでプレイする北海道ゲーム。",
-                streamUrl: "https://www.youtube.com/watch?v=DPSCYnRoZ2Y"
-            },
-            {
-                title: "3000点リベンジ🍉【到達率0.1%】スイカゲーム⁉️いいえ北海道ゲームです【リベンジ達成⁉️】",
-                date: "2023-11-13",
-                game: "北海道ゲーム",
-                explanation: "3000点を目指してリベンジに挑む回。",
-                streamUrl: "https://www.youtube.com/watch?v=E_QiCHU4SdA"
-            },
-            {
-                title: "【大人気ゲーム🍉】スイカゲーム⁉️いいえ北海道ゲームです【たかねこのドライブゴーゴー】",
-                date: "2023-11-13",
-                game: "北海道ゲーム",
-                explanation: "スイカゲーム…ではなく、北海道ゲームの初回プレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=_1dznrOtjI8"
-            },
+            }
         ];
 
         /* ===================================================================
@@ -726,10 +809,11 @@
         document.addEventListener('DOMContentLoaded', () => {
             renderTerms();
             renderArchives();
+            renderLocalVideos(); // ローカル動画の描画
             loadTheme();
-            updateLiveBanner(); // ライブ配信バナーの初期化
+            updateLiveBanner();
             if(nextLiveConfig.date) {
-                countdownInterval = setInterval(updateLiveBanner, 1000); // 1秒ごとに更新
+                countdownInterval = setInterval(updateLiveBanner, 1000);
             }
         });
 
@@ -749,7 +833,7 @@
             }
         }
 
-        // 保存されたテーマを適用する処理
+        // 保存されたテーマを適用
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
@@ -765,9 +849,16 @@
             
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
+
+            // タブを切り替えたらすべてのローカル動画を一時停止する
+            document.querySelectorAll('.video-element').forEach(video => {
+                video.pause();
+                const btn = video.parentElement.querySelector('.play-pause-btn');
+                if(btn) btn.textContent = '▶ 再生';
+            });
         }
 
-        // YouTube URLから動画IDを抽出する関数
+        // YouTube URLから動画IDを抽出
         function getYouTubeId(url) {
             if (!url) return null;
             const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|live\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -775,36 +866,31 @@
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // ライブ配信バナーを制御する関数
+        // ライブ配信バナー
         function updateLiveBanner() {
             const banner = document.getElementById('live-banner');
             const titleElem = document.getElementById('live-title');
             const statusElem = document.getElementById('live-status');
             const linkBtn = document.getElementById('live-link-btn');
 
-            // 設定が空の場合は非表示
             if (!nextLiveConfig.date) {
                 banner.style.display = 'none';
                 return;
             }
 
-            // iOS等でも動作するよう、日付の形式を正規化して時間を取得
             const liveDateStr = nextLiveConfig.date.replace(/-/g, '/');
             const liveDate = new Date(liveDateStr).getTime();
             const now = new Date().getTime();
             const diff = liveDate - now;
 
-            // 3時間 = 10,800,000ミリ秒
             const threeHours = 3 * 60 * 60 * 1000;
 
             if (diff > 0) {
-                // カウントダウン中
                 const d = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const s = Math.floor((diff % (1000 * 60)) / 1000);
                 
-                // 日数も含めて「dd:hh:mm:ss」の形式にゼロ埋めで揃える
                 const dStr = String(d).padStart(2, '0');
                 const hStr = String(h).padStart(2, '0');
                 const mStr = String(m).padStart(2, '0');
@@ -818,20 +904,18 @@
                 banner.style.display = 'block';
 
             } else if (diff <= 0 && diff > -threeHours) {
-                // LIVE NOW (配信時間から3時間以内)
                 titleElem.innerText = nextLiveConfig.title;
                 statusElem.innerHTML = `<span class="live-now-text">🔴 LIVE NOW</span>`;
                 linkBtn.href = nextLiveConfig.url;
                 banner.style.display = 'block';
 
             } else {
-                // 3時間経過後は非表示にして、更新タイマーも停止
                 banner.style.display = 'none';
                 clearInterval(countdownInterval);
             }
         }
 
-        // 用語辞典を描画する関数
+        // 用語辞典の描画
         function renderTerms() {
             const container = document.getElementById('terms-container');
             container.innerHTML = termsData.map((data, index) => {
@@ -873,7 +957,7 @@
             }).join('');
         }
 
-        // アーカイブを描画する関数
+        // アーカイブの描画
         function renderArchives() {
             const container = document.getElementById('archives-container');
             container.innerHTML = archivesData.map((data, index) => {
@@ -910,6 +994,136 @@
                 `;
             }).join('');
         }
+
+        // ==========================================
+        // ローカル動画プレイヤーの構築と制御
+        // ==========================================
+        function renderLocalVideos() {
+            const container = document.getElementById('local-videos-container');
+            
+            if(videosData.length === 0) {
+                container.innerHTML = "<p>現在公開されている動画はありません。</p>";
+                return;
+            }
+
+            container.innerHTML = videosData.map((video, index) => {
+                const delay = index * 0.1;
+                const playerId = `player-${index}`;
+                
+                return `
+                    <div class="card custom-player-wrapper" style="animation-delay: ${delay}s">
+                        <div class="player-title">${video.title}</div>
+                        <div class="video-container">
+                            <video id="${playerId}" class="video-element" src="${video.filename}"></video>
+                            
+                            <!-- カスタムコントローラー -->
+                            <div class="custom-controls">
+                                <button class="ctrl-btn play-pause-btn" onclick="togglePlay('${playerId}')">▶ 再生</button>
+                                
+                                <div class="progress-bar-container">
+                                    <span class="time-display" id="current-time-${playerId}">00:00</span>
+                                    <input type="range" class="progress-bar" id="progress-${playerId}" value="0" min="0" max="100" step="0.1" oninput="seekVideo('${playerId}', this.value)">
+                                    <span class="time-display" id="duration-${playerId}">00:00</span>
+                                </div>
+                                
+                                <div class="ctrl-options">
+                                    <select class="ctrl-select" onchange="changeSpeed('${playerId}', this.value)">
+                                        <option value="0.1">0.1x</option>
+                                        <option value="0.25">0.25x</option>
+                                        <option value="0.5">0.5x</option>
+                                        <option value="0.75">0.75x</option>
+                                        <option value="1" selected>1.0x (標準)</option>
+                                        <option value="1.25">1.25x</option>
+                                        <option value="1.5">1.5x</option>
+                                        <option value="2">2.0x</option>
+                                        <option value="3">3.0x</option>
+                                        <option value="5">5.0x</option>
+                                    </select>
+                                    
+                                    <label class="repeat-label">
+                                        <input type="checkbox" onchange="toggleLoop('${playerId}', this.checked)">
+                                        リピート
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // 各動画のイベントリスナーを設定（時間更新など）
+            videosData.forEach((_, index) => {
+                const playerId = `player-${index}`;
+                const video = document.getElementById(playerId);
+                const progressBar = document.getElementById(`progress-${playerId}`);
+                const currentDisplay = document.getElementById(`current-time-${playerId}`);
+                const durationDisplay = document.getElementById(`duration-${playerId}`);
+                const playBtn = video.parentElement.querySelector('.play-pause-btn');
+
+                // 動画のメタデータが読み込まれたら全体の時間を表示
+                video.addEventListener('loadedmetadata', () => {
+                    durationDisplay.textContent = formatTime(video.duration);
+                });
+
+                // 動画の再生が進むたびにバーと現在時間を更新
+                video.addEventListener('timeupdate', () => {
+                    if (!video.duration) return;
+                    const percent = (video.currentTime / video.duration) * 100;
+                    progressBar.value = percent;
+                    currentDisplay.textContent = formatTime(video.currentTime);
+                });
+
+                // 動画が最後まで再生された時の処理
+                video.addEventListener('ended', () => {
+                    if(!video.loop) {
+                        playBtn.textContent = '▶ 再生';
+                    }
+                });
+            });
+        }
+
+        // 時間フォーマット関数 (例: 65秒 -> 01:05)
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "00:00";
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        // 再生・一時停止の切り替え
+        function togglePlay(playerId) {
+            const video = document.getElementById(playerId);
+            const btn = video.parentElement.querySelector('.play-pause-btn');
+            
+            if (video.paused) {
+                video.play();
+                btn.textContent = '⏸ 一時停止';
+            } else {
+                video.pause();
+                btn.textContent = '▶ 再生';
+            }
+        }
+
+        // シークバー（再生位置）の変更
+        function seekVideo(playerId, value) {
+            const video = document.getElementById(playerId);
+            if (!video.duration) return;
+            const newTime = video.duration * (value / 100);
+            video.currentTime = newTime;
+        }
+
+        // 再生速度の変更
+        function changeSpeed(playerId, speed) {
+            const video = document.getElementById(playerId);
+            video.playbackRate = parseFloat(speed);
+        }
+
+        // リピートの切り替え
+        function toggleLoop(playerId, isLoop) {
+            const video = document.getElementById(playerId);
+            video.loop = isLoop;
+        }
+
     </script>
 </body>
 </html>
