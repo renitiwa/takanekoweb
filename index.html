@@ -366,6 +366,7 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 4px 4px 0px var(--border-color);
+            position: relative; /* フルスクリーンボタン配置のため */
         }
 
         .video-element {
@@ -433,12 +434,22 @@
             cursor: pointer;
         }
 
-        /* 速度調整・リピート設定 */
+        /* 速度調整・リピート設定・音量 */
         .ctrl-options {
             display: flex;
             align-items: center;
             gap: 15px;
             font-size: 14px;
+            flex-wrap: wrap;
+            width: 100%;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+        
+        .ctrl-options-left, .ctrl-options-right {
+             display: flex;
+             align-items: center;
+             gap: 15px;
         }
 
         .ctrl-select {
@@ -457,6 +468,35 @@
             gap: 5px;
             cursor: pointer;
             user-select: none;
+        }
+        
+        /* 音量スライダー */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .volume-bar {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 80px;
+            height: 6px;
+            background: var(--hover-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .volume-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--text-color);
+            border-radius: 50%;
+            cursor: pointer;
         }
 
         .time-display {
@@ -629,6 +669,10 @@
             {
                 filename: "2.mp4",
                 title: "いたぁい♡"
+            },
+            {
+                filename: "3.mp4",
+                title: "初見さよならトーク"
             },
             // 動画を増やす場合は、以下のようにコピペして追加してください
             // {
@@ -805,11 +849,12 @@
            =================================================================== */
 
         let countdownInterval;
+        const audioContexts = {}; // 音量増幅用のAudioContextを保存
 
         document.addEventListener('DOMContentLoaded', () => {
             renderTerms();
             renderArchives();
-            renderLocalVideos(); // ローカル動画の描画
+            renderLocalVideos();
             loadTheme();
             updateLiveBanner();
             if(nextLiveConfig.date) {
@@ -883,7 +928,8 @@
             const now = new Date().getTime();
             const diff = liveDate - now;
 
-            const threeHours = 3 * 60 * 60 * 1000;
+            // 3時間半 = 3.5 * 60 * 60 * 1000 = 12,600,000ミリ秒
+            const threeHalfHours = 3.5 * 60 * 60 * 1000;
 
             if (diff > 0) {
                 const d = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -903,7 +949,7 @@
                 linkBtn.href = nextLiveConfig.url;
                 banner.style.display = 'block';
 
-            } else if (diff <= 0 && diff > -threeHours) {
+            } else if (diff <= 0 && diff > -threeHalfHours) {
                 titleElem.innerText = nextLiveConfig.title;
                 statusElem.innerHTML = `<span class="live-now-text">🔴 LIVE NOW</span>`;
                 linkBtn.href = nextLiveConfig.url;
@@ -1017,7 +1063,7 @@
                             <video id="${playerId}" class="video-element" src="${video.filename}"></video>
                             
                             <!-- カスタムコントローラー -->
-                            <div class="custom-controls">
+                            <div class="custom-controls" id="controls-${playerId}">
                                 <button class="ctrl-btn play-pause-btn" onclick="togglePlay('${playerId}')">▶ 再生</button>
                                 
                                 <div class="progress-bar-container">
@@ -1027,23 +1073,31 @@
                                 </div>
                                 
                                 <div class="ctrl-options">
-                                    <select class="ctrl-select" onchange="changeSpeed('${playerId}', this.value)">
-                                        <option value="0.1">0.1x</option>
-                                        <option value="0.25">0.25x</option>
-                                        <option value="0.5">0.5x</option>
-                                        <option value="0.75">0.75x</option>
-                                        <option value="1" selected>1.0x (標準)</option>
-                                        <option value="1.25">1.25x</option>
-                                        <option value="1.5">1.5x</option>
-                                        <option value="2">2.0x</option>
-                                        <option value="3">3.0x</option>
-                                        <option value="5">5.0x</option>
-                                    </select>
-                                    
-                                    <label class="repeat-label">
-                                        <input type="checkbox" onchange="toggleLoop('${playerId}', this.checked)">
-                                        リピート
-                                    </label>
+                                    <div class="ctrl-options-left">
+                                        <select class="ctrl-select" onchange="changeSpeed('${playerId}', this.value)">
+                                            <option value="0.1">0.1x</option>
+                                            <option value="0.25">0.25x</option>
+                                            <option value="0.5">0.5x</option>
+                                            <option value="0.75">0.75x</option>
+                                            <option value="1" selected>1.0x (標準)</option>
+                                            <option value="1.25">1.25x</option>
+                                            <option value="1.5">1.5x</option>
+                                            <option value="2">2.0x</option>
+                                            <option value="3">3.0x</option>
+                                            <option value="5">5.0x</option>
+                                        </select>
+                                        <label class="repeat-label">
+                                            <input type="checkbox" onchange="toggleLoop('${playerId}', this.checked)">
+                                            リピート
+                                        </label>
+                                    </div>
+                                    <div class="ctrl-options-right">
+                                        <div class="volume-container">
+                                            🔊 <input type="range" class="volume-bar" id="volume-${playerId}" value="1" min="0" max="2" step="0.1" oninput="changeVolume('${playerId}', this.value)">
+                                            <span id="volume-text-${playerId}" style="width: 35px; text-align: right;">1.0x</span>
+                                        </div>
+                                        <button class="ctrl-btn" onclick="toggleFullScreen('${playerId}')">⛶ 全画面</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1051,7 +1105,7 @@
                 `;
             }).join('');
 
-            // 各動画のイベントリスナーを設定（時間更新など）
+            // 各動画のイベントリスナーを設定
             videosData.forEach((_, index) => {
                 const playerId = `player-${index}`;
                 const video = document.getElementById(playerId);
@@ -1060,12 +1114,10 @@
                 const durationDisplay = document.getElementById(`duration-${playerId}`);
                 const playBtn = video.parentElement.querySelector('.play-pause-btn');
 
-                // 動画のメタデータが読み込まれたら全体の時間を表示
                 video.addEventListener('loadedmetadata', () => {
                     durationDisplay.textContent = formatTime(video.duration);
                 });
 
-                // 動画の再生が進むたびにバーと現在時間を更新
                 video.addEventListener('timeupdate', () => {
                     if (!video.duration) return;
                     const percent = (video.currentTime / video.duration) * 100;
@@ -1073,12 +1125,17 @@
                     currentDisplay.textContent = formatTime(video.currentTime);
                 });
 
-                // 動画が最後まで再生された時の処理
                 video.addEventListener('ended', () => {
                     if(!video.loop) {
                         playBtn.textContent = '▶ 再生';
                     }
                 });
+                
+                // フルスクリーン変更時の制御（標準コントローラーのオンオフ）
+                video.addEventListener('fullscreenchange', () => handleFullscreenChange(video));
+                video.addEventListener('webkitfullscreenchange', () => handleFullscreenChange(video));
+                video.addEventListener('mozfullscreenchange', () => handleFullscreenChange(video));
+                video.addEventListener('MSFullscreenChange', () => handleFullscreenChange(video));
             });
         }
 
@@ -1093,7 +1150,10 @@
         // 再生・一時停止の切り替え
         function togglePlay(playerId) {
             const video = document.getElementById(playerId);
-            const btn = video.parentElement.querySelector('.play-pause-btn');
+            const btn = document.getElementById(`controls-${playerId}`).querySelector('.play-pause-btn');
+            
+            // 初回再生時にAudioContextを作成して音量増幅機能を有効化
+            initAudioContext(playerId);
             
             if (video.paused) {
                 video.play();
@@ -1101,6 +1161,45 @@
             } else {
                 video.pause();
                 btn.textContent = '▶ 再生';
+            }
+        }
+
+        // 音量増幅用のWeb Audio API初期化
+        function initAudioContext(playerId) {
+            if (audioContexts[playerId]) return; // 既に作成済みなら何もしない
+            
+            try {
+                const video = document.getElementById(playerId);
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioContext();
+                const source = ctx.createMediaElementSource(video);
+                const gainNode = ctx.createGain();
+                
+                // 現在のスライダー値を取得して適用
+                const currentVol = document.getElementById(`volume-${playerId}`).value;
+                gainNode.gain.value = parseFloat(currentVol);
+                
+                source.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                
+                audioContexts[playerId] = { ctx, gainNode };
+            } catch (e) {
+                console.error("Audio APIの初期化に失敗しました", e);
+            }
+        }
+
+        // 音量の変更 (0〜2倍)
+        function changeVolume(playerId, value) {
+            const textDisplay = document.getElementById(`volume-text-${playerId}`);
+            textDisplay.textContent = parseFloat(value).toFixed(1) + "x";
+            
+            // Web Audio APIが初期化されていればGainを調整
+            if (audioContexts[playerId]) {
+                audioContexts[playerId].gainNode.gain.value = parseFloat(value);
+            } else {
+                // まだ再生されておらず初期化されていない場合は、1以下の時だけ標準APIで調整
+                const video = document.getElementById(playerId);
+                video.volume = value > 1 ? 1 : value;
             }
         }
 
@@ -1122,6 +1221,32 @@
         function toggleLoop(playerId, isLoop) {
             const video = document.getElementById(playerId);
             video.loop = isLoop;
+        }
+        
+        // 全画面表示の切り替え
+        function toggleFullScreen(playerId) {
+            const video = document.getElementById(playerId);
+            if (video.requestFullscreen) {
+                video.requestFullscreen();
+            } else if (video.webkitRequestFullscreen) { /* Safari */
+                video.webkitRequestFullscreen();
+            } else if (video.msRequestFullscreen) { /* IE11 */
+                video.msRequestFullscreen();
+            }
+        }
+        
+        // 全画面時のみ標準コントローラーを表示する処理
+        function handleFullscreenChange(video) {
+            const isFullscreen = document.fullscreenElement === video || 
+                                 document.webkitFullscreenElement === video || 
+                                 document.mozFullScreenElement === video ||
+                                 document.msFullscreenElement === video;
+                                 
+            if (isFullscreen) {
+                video.controls = true; // 全画面時は標準のコントロールを表示
+            } else {
+                video.controls = false; // 元に戻ったらカスタムコントロールを使うので非表示
+            }
         }
 
     </script>
