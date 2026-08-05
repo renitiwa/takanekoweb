@@ -23,6 +23,8 @@
             --border-color: #222222;
             --hover-bg: #f8f8f8;
             --card-bg: #ffffff;
+            --live-bg: #fff5f5;
+            --live-border: #e60000;
         }
 
         /* ダークモード時のカラー設定 */
@@ -32,6 +34,8 @@
             --border-color: #f0f0f0;
             --hover-bg: #2a2a2a;
             --card-bg: #222222;
+            --live-bg: #3a1c1c;
+            --live-border: #ff4d4d;
         }
 
         body {
@@ -134,6 +138,68 @@
         .page-section.active {
             display: block;
             animation: fadeIn 0.4s ease forwards;
+        }
+
+        /* =========================================
+           ライブ配信バナー（カウントダウンエリア）
+           ========================================= */
+        .live-banner {
+            background-color: var(--live-bg);
+            border-color: var(--live-border) !important;
+            box-shadow: 4px 4px 0px var(--live-border) !important;
+            text-align: center;
+            padding: 25px 20px;
+            margin-bottom: 30px;
+            animation: slideDown 0.5s ease;
+        }
+
+        .live-banner-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .live-title {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .countdown-label {
+            font-size: 14px;
+            color: #666;
+        }
+        body.dark-mode .countdown-label {
+            color: #aaa;
+        }
+
+        .countdown-time {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .live-now-text {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--live-border);
+            animation: blink 1.2s infinite;
+        }
+
+        .live-btn {
+            background-color: var(--live-border) !important;
+            border-color: var(--live-border) !important;
+            color: #fff !important;
+            margin-top: 10px;
+            font-size: 18px;
+            padding: 12px 30px !important;
+        }
+        
+        .live-btn:hover {
+             background-color: #fff !important;
+             color: var(--live-border) !important;
         }
 
         /* =========================================
@@ -329,6 +395,10 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
     </style>
 </head>
 <body>
@@ -346,6 +416,16 @@
     </header>
 
     <main>
+        <!-- ライブ配信バナー (設定されている場合のみ出現) -->
+        <div id="live-banner" class="card live-banner" style="display: none;">
+            <div class="live-banner-inner">
+                <h2 id="live-title" class="live-title"></h2>
+                <div id="live-status"></div>
+                <!-- 配信を見るボタン -->
+                <a id="live-link-btn" href="#" target="_blank" class="action-btn live-btn">配信を見る</a>
+            </div>
+        </div>
+
         <!-- 用語辞典 -->
         <section id="glossary" class="page-section active">
             <div id="terms-container"></div>
@@ -360,16 +440,16 @@
         <section id="about" class="page-section">
             <div class="card" style="animation-delay: 0s;">
                 <div class="about-container">
-                    <!-- ▼ アイコン画像のURLを src="" の中に入れてください -->
+                    <!-- ▼ アイコン画像のURL -->
                     <img src="https://yt3.googleusercontent.com/rFcbY_IirXgGmoGlJAWiF_E_LFM2z61x5euwBe3Z3OXh1goK98x-I9e85DcWuEqPRPv8hH7h5BM=s160-c-k-c0x00ffffff-no-rj" alt="アイコン" class="about-icon">
                     
                     <h2 style="margin-top: 0;">たかねこ</h2>
                     
-                    <!-- ▼ プロフィールや説明文をここに書きます -->
+                    <!-- ▼ プロフィールや説明文 -->
                     <div class="about-description">
                         ホラー嫌いでバカゲー好きのたかねこ🐈趣味でお酒飲みながらのんびりゲーム実況やってます| ε:)_</div>
 
-                    <!-- ▼ 各リンク先のURLを href="" の中に入れてください -->
+                    <!-- ▼ 各リンク先 -->
                     <div class="links-wrapper">
                         <a href="https://www.youtube.com/@takaneko_ch" target="_blank" class="action-btn">YouTube</a>
                         <a href="https://www.tiktok.com/@takaneko_ch?is_from_webapp=1&sender_device=pc" target="_blank" class="action-btn">TikTok</a>
@@ -385,6 +465,19 @@
            【データ更新エリア】
            ここから下のデータを追加・変更するだけでサイトに反映されます
            =================================================================== */
+
+        // ▼ 次のライブ配信の設定
+        const nextLiveConfig = {
+            // 配信の日時を設定します（西暦-月-日T時:分:秒 の形式。例: "2026-08-10T20:00:00"）
+            // カウントダウンを出したくない場合は "" と空にしてください。
+            date: "2026-08-10T20:00:00", 
+            
+            // 配信のタイトル（任意）
+            title: "【雑談】次の配信予定！",
+            
+            // 「配信を見る」ボタンの飛び先URL（待機所のURLやチャンネルURLなど）
+            url: "https://www.youtube.com/@takaneko_ch/live"
+        };
 
         // ▼ 用語辞典のデータ
         const termsData = [
@@ -426,7 +519,6 @@
         ];
 
         // ▼ アーカイブのデータ
-// ▼ アーカイブのデータ
         const archivesData = [
             {
                 title: "【リハビリ14日目】めっちゃカメレオン【隠れるゲーム】",
@@ -539,79 +631,23 @@
                 game: "めっちゃカメレオン",
                 explanation: "リハビリ配信1日目。",
                 streamUrl: "https://www.youtube.com/live/QAAByIx1nWg?si=NvmF2tkF-V9B-YAO"
-            },
-            {
-                title: "【バカゲー⁉️】カロリーメイトになって栄養を届けるゲーム【Calorie Mate LIQUID FOR GAME CREATORS】",
-                date: "2024-09-12",
-                game: "Calorie Mate LIQUID FOR GAME CREATORS",
-                explanation: "活動休止前の配信。自らがカロリーメイトになって人間に飲んでもらうという強烈なバカゲーをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=7Yt4EBpW0eY"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】名古屋市港区～昭和区",
-                date: "2024-03-01",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。ご当地ネタや愛知あるあるが楽しめます。",
-                streamUrl: "https://www.youtube.com/watch?v=35DzSoiscNE"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】知立市＆刈谷市～名古屋市守山区まで",
-                date: "2024-01-13",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=jdzmzhggg0Q"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】幸田町～高浜市まで",
-                date: "2023-12-21",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=ToNk1D2Bb4Y"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】田原市～豊橋市まで",
-                date: "2023-11-27",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=g9_QvxQD4Jo"
-            },
-            {
-                title: "【愛知を救え】愛知県民が愛知を救う愛知クエスト【たかねこのドライブゴーゴー】蟹江町～一宮市まで",
-                date: "2023-11-22",
-                game: "愛知クエスト",
-                explanation: "愛知県を舞台にしたRPGをプレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=oTi29OjKL0E"
-            },
-            {
-                title: "北海道消滅大作戦【三重弁縛り】スイカゲーム⁉️いいえ北海道ゲームです【たかねこのドライブゴーゴー】",
-                date: "2023-11-15",
-                game: "北海道ゲーム",
-                explanation: "まさかの三重弁縛りでプレイする北海道ゲーム。",
-                streamUrl: "https://www.youtube.com/watch?v=DPSCYnRoZ2Y"
-            },
-            {
-                title: "3000点リベンジ🍉【到達率0.1%】スイカゲーム⁉️いいえ北海道ゲームです【リベンジ達成⁉️】",
-                date: "2023-11-13",
-                game: "北海道ゲーム",
-                explanation: "3000点を目指してリベンジに挑む回。",
-                streamUrl: "https://www.youtube.com/watch?v=E_QiCHU4SdA"
-            },
-            {
-                title: "【大人気ゲーム🍉】スイカゲーム⁉️いいえ北海道ゲームです【たかねこのドライブゴーゴー】",
-                date: "2023-11-13",
-                game: "北海道ゲーム",
-                explanation: "スイカゲーム…ではなく、北海道ゲームの初回プレイ。",
-                streamUrl: "https://www.youtube.com/watch?v=_1dznrOtjI8"
-            },
+            }
         ];
+
         /* ===================================================================
            【システム処理エリア】
            =================================================================== */
 
+        let countdownInterval;
+
         document.addEventListener('DOMContentLoaded', () => {
             renderTerms();
             renderArchives();
-            loadTheme(); // 保存されたテーマ（ダーク/ライト）を読み込む
+            loadTheme();
+            updateLiveBanner(); // ライブ配信バナーの初期化
+            if(nextLiveConfig.date) {
+                countdownInterval = setInterval(updateLiveBanner, 1000); // 1秒ごとに更新
+            }
         });
 
         // テーマ（ダークモード）切り替え処理
@@ -623,7 +659,7 @@
             
             if (body.classList.contains('dark-mode')) {
                 btn.textContent = '☀️ ライト';
-                localStorage.setItem('theme', 'dark'); // 状態を保存
+                localStorage.setItem('theme', 'dark');
             } else {
                 btn.textContent = '🌙 ダーク';
                 localStorage.setItem('theme', 'light');
@@ -646,6 +682,56 @@
             
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
+        }
+
+        // ライブ配信バナーを制御する関数
+        function updateLiveBanner() {
+            const banner = document.getElementById('live-banner');
+            const titleElem = document.getElementById('live-title');
+            const statusElem = document.getElementById('live-status');
+            const linkBtn = document.getElementById('live-link-btn');
+
+            // 設定が空の場合は非表示
+            if (!nextLiveConfig.date) {
+                banner.style.display = 'none';
+                return;
+            }
+
+            const liveDate = new Date(nextLiveConfig.date).getTime();
+            const now = new Date().getTime();
+            const diff = liveDate - now;
+
+            // 3時間 = 10,800,000ミリ秒
+            const threeHours = 3 * 60 * 60 * 1000;
+
+            if (diff > 0) {
+                // カウントダウン中
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                let timeStr = "";
+                if (d > 0) timeStr += d + "日 ";
+                timeStr += `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                
+                titleElem.innerText = nextLiveConfig.title;
+                statusElem.innerHTML = `<span class="countdown-label">次のライブ配信まで</span><span class="countdown-time">${timeStr}</span>`;
+                linkBtn.href = nextLiveConfig.url;
+                banner.style.display = 'block';
+
+            } else if (diff <= 0 && diff > -threeHours) {
+                // LIVE NOW (配信時間から3時間以内)
+                titleElem.innerText = nextLiveConfig.title;
+                statusElem.innerHTML = `<span class="live-now-text">🔴 LIVE NOW</span>`;
+                linkBtn.href = nextLiveConfig.url;
+                banner.style.display = 'block';
+
+            } else {
+                // 3時間経過後は非表示にして、更新タイマーも停止
+                banner.style.display = 'none';
+                clearInterval(countdownInterval);
+            }
         }
 
         // 用語辞典を描画する関数
@@ -685,7 +771,6 @@
             const container = document.getElementById('archives-container');
             container.innerHTML = archivesData.map((data, index) => {
                 const delay = index * 0.1;
-                // explanationが無い場合のエラー防止
                 const descText = data.explanation ? data.explanation : "説明はありません。";
 
                 return `
