@@ -292,6 +292,18 @@
             padding: 20px 0;
         }
 
+        /* サムネイル画像のデザイン */
+        .video-thumbnail {
+            width: 100%;
+            max-width: 480px; 
+            height: auto;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            margin: 0 auto 15px auto;
+            display: block;
+            box-shadow: 2px 2px 0px var(--border-color);
+        }
+
         /* =========================================
            たかねこについて (About) ページ専用
            ========================================= */
@@ -476,7 +488,7 @@
             title: "ライブ配信予定",
             
             // 「配信を見る」ボタンの飛び先URL（待機所のURLやチャンネルURLなど）
-            url: "https://www.youtube.com/live/r_1WFV0R3S4?si=Qxk8RcQQMe5gETBa"
+            url: "https://www.youtube.com/live/r_1WFV0R3S4?si=iSMSHvxn89hG_1v-"
         };
 
 
@@ -528,13 +540,6 @@
 
         // ▼ アーカイブのデータ
         const archivesData = [
-            {
-                title: "【リハビリ15日目】めっちゃカメレオン【隠れるゲーム】",
-                date: "2026-08-05",
-                game: "めっちゃカメレオン",
-                explanation: "15日目のリハビリ配信。",
-                streamUrl: "https://www.youtube.com/live/r_1WFV0R3S4?si=P8DWyOw_R426dEbe"
-            },
             {
                 title: "【リハビリ14日目】めっちゃカメレオン【隠れるゲーム】",
                 date: "2026-08-04",
@@ -709,7 +714,7 @@
                 game: "北海道ゲーム",
                 explanation: "スイカゲーム…ではなく、北海道ゲームの初回プレイ。",
                 streamUrl: "https://www.youtube.com/watch?v=_1dznrOtjI8"
-            }
+            },
         ];
 
         /* ===================================================================
@@ -760,6 +765,14 @@
             
             document.getElementById(tabId).classList.add('active');
             event.target.classList.add('active');
+        }
+
+        // YouTube URLから動画IDを抽出する関数
+        function getYouTubeId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|live\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
         }
 
         // ライブ配信バナーを制御する関数
@@ -823,12 +836,22 @@
             const container = document.getElementById('terms-container');
             container.innerHTML = termsData.map((data, index) => {
                 const delay = index * 0.1;
-                const clipButtonHtml = data.clipUrl ? `
-                    <div class="clip-container">
-                        <a href="${data.clipUrl}" target="_blank" class="action-btn">切り抜き動画を見る</a>
-                        <span class="clip-time">(${data.clipSeconds})</span>
-                    </div>
-                ` : '';
+                
+                let clipHtml = '';
+                if (data.clipUrl) {
+                    const videoId = getYouTubeId(data.clipUrl);
+                    const thumbnailHtml = videoId 
+                        ? `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="サムネイル" class="video-thumbnail" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">` 
+                        : '';
+                        
+                    clipHtml = `
+                        ${thumbnailHtml}
+                        <div class="clip-container">
+                            <a href="${data.clipUrl}" target="_blank" class="action-btn">切り抜き動画を見る</a>
+                            <span class="clip-time">(${data.clipSeconds})</span>
+                        </div>
+                    `;
+                }
 
                 return `
                     <div class="card" style="animation-delay: ${delay}s">
@@ -841,7 +864,7 @@
                                 <div class="details-content">
                                     <p><strong>説明：</strong><br>${data.explanation}</p>
                                     <p><strong>登場した配信：</strong> ${data.streamName}</p>
-                                    ${clipButtonHtml}
+                                    ${clipHtml}
                                 </div>
                             </div>
                         </div>
@@ -856,6 +879,11 @@
             container.innerHTML = archivesData.map((data, index) => {
                 const delay = index * 0.1;
                 const descText = data.explanation ? data.explanation : "説明はありません。";
+                
+                const videoId = getYouTubeId(data.streamUrl);
+                const thumbnailHtml = videoId 
+                    ? `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="サムネイル" class="video-thumbnail" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">` 
+                    : '';
 
                 return `
                     <div class="card" style="animation-delay: ${delay}s">
@@ -869,6 +897,7 @@
                         <div class="details-wrapper">
                             <div class="details-inner">
                                 <div class="details-content">
+                                    ${thumbnailHtml}
                                     <p><strong>ゲーム名：</strong> ${data.game}</p>
                                     <p><strong>説明：</strong><br>${descText}</p>
                                     <div style="text-align: center; margin-top: 20px;">
