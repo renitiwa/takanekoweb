@@ -154,7 +154,6 @@
             animation: slideDown 0.5s ease;
         }
         
-        /* 調査中ステータス用のカラー */
         .live-banner.investigating {
             background-color: #f0f8ff;
             border-color: #0066cc !important;
@@ -224,7 +223,6 @@
              color: var(--live-border) !important;
         }
         
-        /* 調査中用のボタンカラー */
         .live-banner.investigating .live-btn {
             background-color: #0066cc !important;
             border-color: #0066cc !important;
@@ -307,6 +305,7 @@
         .details-inner { overflow: hidden; padding: 0 20px; }
         .details-content { padding: 20px 0; }
 
+        /* 画像 (拡大対応クラス付き) */
         .video-thumbnail {
             width: 100%;
             max-width: 480px; 
@@ -316,6 +315,10 @@
             margin: 0 auto 15px auto;
             display: block;
             box-shadow: 2px 2px 0px var(--border-color);
+            cursor: pointer; /* クリックできることを示す */
+        }
+        .video-thumbnail:hover {
+            opacity: 0.9;
         }
 
         /* たかねこについて */
@@ -323,6 +326,7 @@
         .about-icon {
             width: 150px; height: 150px; border-radius: 50%; border: 4px solid var(--border-color);
             margin-bottom: 20px; object-fit: cover; background-color: var(--hover-bg);
+            cursor: pointer;
         }
         .about-description { margin-bottom: 30px; font-size: 16px; line-height: 1.8; max-width: 600px; margin-left: auto; margin-right: auto; }
         .links-wrapper { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
@@ -362,173 +366,105 @@
         /* =========================================
            たかねこガチャ用デザイン
            ========================================= */
-        .gacha-container {
-            text-align: center;
-            padding: 20px;
-        }
+        .gacha-container { text-align: center; padding: 20px; }
         .pt-display {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 3px solid var(--border-color);
-            border-radius: 8px;
-            background-color: var(--hover-bg);
-            display: inline-block;
+            font-size: 24px; font-weight: bold; margin-bottom: 20px; padding: 15px;
+            border: 3px solid var(--border-color); border-radius: 8px;
+            background-color: var(--hover-bg); display: inline-block;
         }
-        .gacha-btns {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+        .gacha-btns { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; }
         .gacha-btn {
-            font-size: 20px;
-            padding: 15px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-            border: 3px solid var(--border-color);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: transform 0.1s, box-shadow 0.1s;
-            box-shadow: 4px 4px 0px var(--border-color);
+            font-size: 20px; padding: 15px 30px; border-radius: 8px; cursor: pointer;
+            font-family: inherit; font-weight: bold; border: 3px solid var(--border-color);
+            background-color: var(--bg-color); color: var(--text-color);
+            transition: transform 0.1s, box-shadow 0.1s; box-shadow: 4px 4px 0px var(--border-color);
         }
-        .gacha-btn:active {
-            transform: translate(4px, 4px);
-            box-shadow: 0px 0px 0px var(--border-color);
-        }
-        .gacha-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .gacha-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px var(--border-color); }
+        .gacha-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ガチャ結果画面 */
         #gacha-result-area {
-            display: none;
-            margin-top: 20px;
-            padding: 20px;
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            background-color: var(--card-bg);
-            animation: fadeIn 0.5s ease;
+            display: none; margin-top: 20px; padding: 20px; border: 2px dashed var(--border-color);
+            border-radius: 8px; background-color: var(--card-bg); animation: fadeIn 0.5s ease;
         }
-        .gacha-result-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
-        }
+        .gacha-result-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 15px; }
         .gacha-item {
-            width: 120px;
-            height: 120px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            object-fit: cover;
-            background-color: #eee;
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            opacity: 0;
-            transform: scale(0.5);
+            width: 120px; height: 120px; border: 2px solid var(--border-color); border-radius: 8px;
+            object-fit: cover; background-color: #eee; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0; transform: scale(0.5); cursor: pointer;
         }
-        .gacha-item-title {
-            font-size: 12px;
-            margin-top: 5px;
-            font-weight: bold;
-        }
-        .gacha-item-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .gacha-item:hover { opacity: 0.8; }
+        .gacha-item-title { font-size: 12px; margin-top: 5px; font-weight: bold; }
+        .gacha-item-wrapper { display: flex; flex-direction: column; align-items: center; }
         
-        /* コレクション画面 */
-        #collection-area {
-            display: none;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 3px solid var(--border-color);
-        }
-        .collection-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
+        #collection-area { display: none; margin-top: 30px; padding-top: 20px; border-top: 3px solid var(--border-color); }
+        .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; margin-top: 20px; }
         .collection-img {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            transition: transform 0.2s;
+            width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border: 2px solid var(--border-color);
+            border-radius: 8px; transition: transform 0.2s; cursor: pointer;
         }
-        .collection-img:hover {
-            transform: scale(1.1);
-        }
+        .collection-img:hover { transform: scale(1.1); }
         .collection-locked {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background-color: #ccc;
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #666;
+            width: 100%; aspect-ratio: 1 / 1; background-color: #ccc; border: 2px dashed var(--border-color);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #666;
         }
 
-        /* ポップアップ(モーダル) */
+        .complete-message {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--live-border);
+            margin-top: 30px;
+            animation: fadeIn 1s ease;
+            text-align: center;
+        }
+
+        /* =========================================
+           ポップアップ(モーダル)＆画像拡大
+           ========================================= */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; transition: opacity 0.3s;
         }
         .modal-content {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 30px;
-            border: 4px solid var(--border-color);
-            border-radius: 12px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            transform: translateY(-20px);
+            background-color: var(--bg-color); color: var(--text-color); padding: 30px;
+            border: 4px solid var(--border-color); border-radius: 12px; text-align: center;
+            max-width: 400px; width: 90%; transform: translateY(-20px);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .modal-overlay.show {
-            display: flex;
-            opacity: 1;
+        .modal-overlay.show { display: flex; opacity: 1; }
+        .modal-overlay.show .modal-content { transform: translateY(0); }
+
+        /* 画像拡大用オーバーレイ */
+        .img-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
         }
-        .modal-overlay.show .modal-content {
-            transform: translateY(0);
+        .img-modal-overlay.show { display: flex; opacity: 1; }
+        .img-modal-content {
+            max-width: 90%; max-height: 90%;
+            border: 4px solid #fff; border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            object-fit: contain;
         }
+        .img-modal-overlay.show .img-modal-content { transform: scale(1); }
+        .img-modal-close {
+            position: absolute; top: 20px; right: 30px;
+            color: #fff; font-size: 40px; font-weight: bold; cursor: pointer;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: color 0.2s;
+        }
+        .img-modal-close:hover { color: #ff4d4d; }
 
         /* 開発者モード設定パネル */
         #dev-settings {
-            display: none;
-            margin-top: 30px;
-            padding: 20px;
-            border: 3px solid #e60000;
-            background-color: #fff5f5;
-            color: #000;
-            border-radius: 8px;
-            text-align: left;
+            display: none; margin-top: 30px; padding: 20px; border: 3px solid #e60000;
+            background-color: #fff5f5; color: #000; border-radius: 8px; text-align: left;
         }
         #dev-settings h3 { margin-top: 0; color: #e60000; }
         .dev-control { margin-bottom: 10px; }
 
-        @keyframes popIn {
-            to { opacity: 1; transform: scale(1); }
-        }
+        @keyframes popIn { to { opacity: 1; transform: scale(1); } }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
@@ -557,7 +493,6 @@
             <div class="live-banner-inner">
                 <h2 id="live-title" class="live-title"></h2>
                 <div id="live-status"></div>
-                <!-- 配信を見るボタン -->
                 <a id="live-link-btn" href="#" target="_blank" class="action-btn live-btn">配信を見る</a>
             </div>
         </div>
@@ -599,8 +534,9 @@
 
                     <!-- コレクション -->
                     <div id="collection-area">
-                        <h3 style="margin-top:0;">獲得済みイラスト一覧</h3>
+                        <h3 style="margin-top:0;">獲得済みサムネ一覧</h3>
                         <div class="collection-grid" id="collection-grid"></div>
+                        <!-- コンプリートメッセージ（動的に挿入されます） -->
                     </div>
 
                     <!-- 開発者専用設定 (隠し要素) -->
@@ -611,7 +547,6 @@
                             <button onclick="setDevPoints()">適用</button>
                         </div>
                         <div class="dev-control">
-                            <!-- 全開放ボタンは削除されました -->
                             <button onclick="resetGachaData()">セーブデータ初期化(リセット)</button>
                         </div>
                     </div>
@@ -623,7 +558,7 @@
         <section id="about" class="page-section">
             <div class="card" style="animation-delay: 0s;">
                 <div class="about-container">
-                    <img src="https://yt3.googleusercontent.com/rFcbY_IirXgGmoGlJAWiF_E_LFM2z61x5euwBe3Z3OXh1goK98x-I9e85DcWuEqPRPv8hH7h5BM=s160-c-k-c0x00ffffff-no-rj" alt="アイコン" class="about-icon">
+                    <img src="https://yt3.googleusercontent.com/rFcbY_IirXgGmoGlJAWiF_E_LFM2z61x5euwBe3Z3OXh1goK98x-I9e85DcWuEqPRPv8hH7h5BM=s160-c-k-c0x00ffffff-no-rj" alt="アイコン" class="about-icon" onclick="openImageModal(this.src)">
                     <h2 style="margin-top: 0;">たかねこ</h2>
                     <div class="about-description">
                         ホラー嫌いでバカゲー好きのたかねこ🐈趣味でお酒飲みながらのんびりゲーム実況やってます| ε:)_</div>
@@ -649,6 +584,12 @@
         </div>
     </div>
 
+    <!-- 画像拡大用ポップアップ -->
+    <div class="img-modal-overlay" id="img-modal" onclick="closeImageModal()">
+        <span class="img-modal-close" onclick="closeImageModal()">&times;</span>
+        <img class="img-modal-content" id="img-modal-target" src="" alt="拡大画像">
+    </div>
+
     <script>
         /* ===================================================================
            【データ更新エリア】
@@ -656,19 +597,9 @@
 
         // ▼ 次のライブ配信の設定
         const nextLiveConfig = {
-            // ステータスを選択します。
-            // "countdown"  : カウントダウンを表示します (日時の設定が必要)
-            // "investigating" : 🔵調査中 と表示します (日時は無視されます)
-            // "" (空文字) : バナー全体を非表示にします
-            status: "countdown", 
-            
-            // 配信の日時を設定します（ステータスが"countdown"の時のみ有効）
-            date: "2026/08/05 22:00:00", 
-            
-            // 配信のタイトル（任意）
+            status: "investigating", // "countdown", "investigating", "" のいずれか
+            date: "2026/08/06 22:00:00", 
             title: "ライブ配信予定",
-            
-            // 「配信を見る」ボタンの飛び先URL（待機所のURLやチャンネルURLなど）
             url: "https://www.youtube.com/live/r_1WFV0R3S4?si=iSMSHvxn89hG_1v-"
         };
 
@@ -679,24 +610,35 @@
             { filename: "3.mp4", title: "初見さよならトーク" },
         ];
 
-        // ▼ ガチャの排出イラストデータ
+        // ▼ ガチャの排出サムネデータ
         const gachaImages = [
-            { id: 1, src: "1.png", name: "イラスト1" },
-            { id: 2, src: "2.png", name: "イラスト2" },
-            { id: 3, src: "3.png", name: "イラスト3" },
-            { id: 4, src: "4.png", name: "イラスト4" },
-            { id: 5, src: "5.png", name: "イラスト5" },
+            { id: 1, src: "1.jpg", name: "サムネ1" },
+            { id: 2, src: "2.jpg", name: "サムネ2" },
+            { id: 3, src: "3.jpg", name: "サムネ3" },
+            { id: 4, src: "4.jpg", name: "サムネ4" },
+            { id: 5, src: "5.jpg", name: "サムネ5" },
+            { id: 6, src: "6.jpg", name: "サムネ6" },
+            { id: 7, src: "7.jpg", name: "サムネ7" },
+            { id: 8, src: "8.jpg", name: "サムネ8" },
+            { id: 9, src: "9.jpg", name: "サムネ9" },
+            { id: 10, src: "10.jpg", name: "サムネ10" },
+            { id: 11, src: "11.jpg", name: "サムネ11" },
+            { id: 12, src: "12.jpg", name: "サムネ12" },
+            { id: 13, src: "13.jpg", name: "サムネ13" },
+            { id: 14, src: "14.jpg", name: "サムネ14" },
+            { id: 15, src: "15.jpg", name: "サムネ15" },
+            { id: 16, src: "16.jpg", name: "サムネ16" },
+            { id: 17, src: "17.jpg", name: "サムネ17" },
+            { id: 18, src: "18.jpg", name: "サムネ18" },
+            { id: 19, src: "19.jpg", name: "サムネ19" },
+            { id: 20, src: "20.jpg", name: "サムネ20" },
+            { id: 21, src: "21.jpg", name: "サムネ21" },
+            { id: 22, src: "22.jpg", name: "サムネ22" },
         ];
 
         // ▼ 用語辞典のデータ
         const termsData = [
-            {
-                term: "ぶぉん！",
-                explanation: "たかねこがマイクをミュートをし忘れ、はなかみハプニングが起こってしまった。そこからなぜかずんだもんボイスがシステムエラーを吐いたり、チャットで「たかねこの鼻水音はレーザー」などの賞賛の声を集めている",
-                streamName: "【リハビリ15日目】めっちゃカメレオン【隠れるゲーム】",
-                clipUrl: "https://youtu.be/fNQbnwNytxo?si=Vmc-kQfJ4s15KVMs", 
-                clipSeconds: "17:21"
-            },
+            { term: "ぶぉん！", explanation: "たかねこがマイクをミュートをし忘れ、はなかみハプニングが起こってしまった。そこからなぜかずんだもんボイスがシステムエラーを吐いたり、チャットで「たかねこの鼻水音はレーザー」などの賞賛の声を集めている", streamName: "【リハビリ15日目】めっちゃカメレオン【隠れるゲーム】", clipUrl: "https://youtu.be/fNQbnwNytxo?si=Vmc-kQfJ4s15KVMs", clipSeconds: "17:21" },
             { term: "あなたのお耳の恋人", explanation: "ほぼ死語", streamName: "不明", clipUrl: "", clipSeconds: "" },
             { term: "初見です", explanation: "視聴者が初見ですを挨拶にし始めたのがきっかけ。", streamName: "不明", clipUrl: "", clipSeconds: "" },
             { term: "こんねこ", explanation: "ちゃっぴーにたかねこがVTuberにあこがれる画像を生成し、そのキャラがこんねこーと言っていたのがきっかけ。", streamName: "【リハビリ6日目】めっちゃカメレオン【隠れるゲーム】", clipUrl: "", clipSeconds: "" },
@@ -706,6 +648,7 @@
 
         // ▼ アーカイブのデータ
         const archivesData = [
+            { title: "【リハビリ15日目】めっちゃカメレオン【隠れるゲーム】", date: "2026-08-05", game: "めっちゃカメレオン", explanation: "15日目のリハビリ配信。", streamUrl: "https://www.youtube.com/live/r_1WFV0R3S4?si=iU5Vbq7Rzf0Myv45" },
             { title: "【リハビリ14日目】めっちゃカメレオン【隠れるゲーム】", date: "2026-08-04", game: "めっちゃカメレオン", explanation: "14日目のリハビリ配信。", streamUrl: "https://www.youtube.com/live/3cG4puKDt7g?si=Ndn57qptB2WvGWX7" },
             { title: "【リハビリ13日目】めっちゃカメレオン【隠れるゲーム】", date: "2026-08-03", game: "めっちゃカメレオン", explanation: "13日目のリハビリ配信。", streamUrl: "https://www.youtube.com/live/WcNZdZSC3Ec?si=36QJPgFNf2uVtlTo" },
             { title: "【リハビリ12日目】めっちゃカメレオン【隠れるゲーム】", date: "2026-08-02", game: "めっちゃカメレオン", explanation: "12日目のリハビリ配信。", streamUrl: "https://www.youtube.com/live/1wYXy5finCs?si=ZXeaLFAYjtNz3M-y" },
@@ -731,12 +674,10 @@
         let countdownInterval;
         const audioContexts = {};
         
-        // デベロッパーモード用変数
         let themeClickCount = 0;
         let themeClickTimer = null;
         let isDevMode = localStorage.getItem('isDevMode') === 'true';
 
-        // ガチャシステム用変数
         let takanekoPoints = parseInt(localStorage.getItem('takanekoPoints')) || 0;
         let collectedImages = JSON.parse(localStorage.getItem('collectedImages')) || [];
         const COST_1 = 50;
@@ -748,23 +689,36 @@
             renderLocalVideos();
             loadTheme();
             
-            // ライブ配信バナーの初期化
             if (nextLiveConfig.status === "countdown") {
                 updateLiveBanner();
                 countdownInterval = setInterval(updateLiveBanner, 1000);
             } else {
-                updateLiveBanner(); // 調査中などの描画
+                updateLiveBanner();
             }
             
-            // ガチャのログインボーナス処理
             checkDailyLogin();
             updateGachaDisplay();
             
-            // デベロッパーモードなら設定項目を表示
             if(isDevMode) {
                 document.getElementById('dev-settings').style.display = 'block';
             }
         });
+
+        /* --- 画像拡大処理 --- */
+        function openImageModal(src) {
+            const overlay = document.getElementById('img-modal');
+            const target = document.getElementById('img-modal-target');
+            target.src = src;
+            overlay.classList.add('show');
+        }
+
+        function closeImageModal() {
+            const overlay = document.getElementById('img-modal');
+            overlay.classList.remove('show');
+            setTimeout(() => {
+                document.getElementById('img-modal-target').src = "";
+            }, 300);
+        }
 
         /* --- UI & タブ制御 --- */
         function loadTheme() {
@@ -855,14 +809,12 @@
             const statusElem = document.getElementById('live-status');
             const linkBtn = document.getElementById('live-link-btn');
 
-            // 非表示設定
             if (!nextLiveConfig.status || nextLiveConfig.status === "") { 
                 banner.style.display = 'none'; 
                 if (countdownInterval) clearInterval(countdownInterval);
                 return; 
             }
             
-            // 調査中ステータス
             if (nextLiveConfig.status === "investigating") {
                 banner.classList.add("investigating");
                 titleElem.innerText = nextLiveConfig.title;
@@ -873,7 +825,6 @@
                 return;
             }
 
-            // カウントダウン処理
             banner.classList.remove("investigating");
             const liveDateStr = nextLiveConfig.date.replace(/-/g, '/');
             const liveDate = new Date(liveDateStr).getTime();
@@ -962,7 +913,7 @@
                 const delay = index * 0.1;
                 resultGrid.innerHTML += `
                     <div class="gacha-item-wrapper">
-                        <img src="${item.src}" class="gacha-item" style="animation-delay: ${delay}s" onerror="this.style.display='none'; this.nextElementSibling.innerText='画像なし'">
+                        <img src="${item.src}" class="gacha-item" style="animation-delay: ${delay}s" onclick="openImageModal(this.src)" onerror="this.style.display='none'; this.nextElementSibling.innerText='画像なし'">
                         <div class="gacha-item-title" style="animation-delay: ${delay}s; opacity:0; animation: fadeIn 0.5s forwards;">${item.name}</div>
                     </div>
                 `;
@@ -987,11 +938,30 @@
             
             gachaImages.forEach(item => {
                 if (collectedImages.includes(item.id)) {
-                    grid.innerHTML += `<img src="${item.src}" class="collection-img" title="${item.name}" onerror="this.src=''; this.alt='画像なし'">`;
+                    grid.innerHTML += `<img src="${item.src}" class="collection-img" title="${item.name}" onclick="openImageModal(this.src)" onerror="this.style.display='none'">`;
                 } else {
                     grid.innerHTML += `<div class="collection-locked" title="未獲得">?</div>`;
                 }
             });
+
+            // コンプリート判定と表示
+            const isCompleted = gachaImages.length > 0 && collectedImages.length >= gachaImages.length;
+            const completeMsgObj = document.getElementById('collection-complete-msg');
+
+            if (isCompleted) {
+                if (!completeMsgObj) {
+                    const colArea = document.getElementById('collection-area');
+                    const compMsg = document.createElement('div');
+                    compMsg.id = 'collection-complete-msg';
+                    compMsg.className = 'complete-message';
+                    compMsg.innerHTML = "✨ COMPLETE!! ✨";
+                    colArea.appendChild(compMsg);
+                }
+            } else {
+                if (completeMsgObj) {
+                    completeMsgObj.remove();
+                }
+            }
         }
 
         /* --- デベロッパーモード --- */
@@ -1001,10 +971,8 @@
                 if (pass === "takanekokonneko") {
                     isDevMode = true;
                     localStorage.setItem('isDevMode', 'true');
-                    takanekoPoints += 100000000;
-                    saveGachaData();
                     document.getElementById('dev-settings').style.display = 'block';
-                    showModal("認証成功", "デベロッパーモードが有効になりました。\n100,000,000ptを付与しました！");
+                    showModal("認証成功", "デベロッパーモードが有効になりました。");
                 } else {
                     showModal("エラー", "パスワードが違います。");
                 }
@@ -1047,7 +1015,7 @@
                 let clipHtml = '';
                 if (data.clipUrl) {
                     const videoId = getYouTubeId(data.clipUrl);
-                    const thumbnailHtml = videoId ? `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="サムネイル" class="video-thumbnail" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">` : '';
+                    const thumbnailHtml = videoId ? `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="サムネイル" class="video-thumbnail" onclick="openImageModal(this.src)" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">` : '';
                     clipHtml = `${thumbnailHtml}<div class="clip-container"><a href="${data.clipUrl}" target="_blank" class="action-btn">切り抜き動画を見る</a><span class="clip-time">(${data.clipSeconds})</span></div>`;
                 }
                 return `<div class="card" style="animation-delay: ${delay}s"><div class="card-header" onclick="this.parentElement.classList.toggle('open')"><span class="term-title">${data.term}</span><span class="toggle-icon">▼</span></div><div class="details-wrapper"><div class="details-inner"><div class="details-content"><p><strong>説明：</strong><br>${data.explanation}</p><p><strong>登場した配信：</strong> ${data.streamName}</p>${clipHtml}</div></div></div></div>`;
@@ -1060,7 +1028,7 @@
                 const delay = index * 0.1;
                 const descText = data.explanation ? data.explanation : "説明はありません。";
                 const videoId = getYouTubeId(data.streamUrl);
-                const thumbnailHtml = videoId ? `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="サムネイル" class="video-thumbnail" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">` : '';
+                const thumbnailHtml = videoId ? `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="サムネイル" class="video-thumbnail" onclick="openImageModal(this.src)" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">` : '';
                 return `<div class="card" style="animation-delay: ${delay}s"><div class="card-header" onclick="this.parentElement.classList.toggle('open')"><div class="archive-basic-info"><span class="archive-title">${data.title}</span><span class="archive-date">${data.date}</span></div><span class="toggle-icon">▼</span></div><div class="details-wrapper"><div class="details-inner"><div class="details-content">${thumbnailHtml}<p><strong>ゲーム名：</strong> ${data.game}</p><p><strong>説明：</strong><br>${descText}</p><div style="text-align: center; margin-top: 20px;"><a href="${data.streamUrl}" target="_blank" class="action-btn">本編配信を見に行く</a></div></div></div></div></div>`;
             }).join('');
         }
