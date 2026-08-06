@@ -362,6 +362,7 @@
         .clip-time { display: block; font-size: 13px; color: #777; margin-top: 5px; font-weight: bold; }
         body.dark-mode .clip-time { color: #aaa; }
 
+
         /* =========================================
            たかねこガチャ用デザイン
            ========================================= */
@@ -405,6 +406,15 @@
         .collection-locked {
             width: 100%; aspect-ratio: 1 / 1; background-color: #ccc; border: 2px dashed var(--border-color);
             border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #666;
+        }
+
+        .complete-message {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--live-border);
+            margin-top: 30px;
+            animation: fadeIn 1s ease;
+            text-align: center;
         }
 
         /* =========================================
@@ -526,9 +536,10 @@
                     <div id="collection-area">
                         <h3 style="margin-top:0;">獲得済みサムネ一覧</h3>
                         <div class="collection-grid" id="collection-grid"></div>
+                        <!-- コンプリートメッセージ（動的に挿入されます） -->
                     </div>
 
-                    <!-- 開発者専用設定 -->
+                    <!-- 開発者専用設定 (隠し要素) -->
                     <div id="dev-settings">
                         <h3>🔧 デベロッパーモード</h3>
                         <div class="dev-control">
@@ -886,7 +897,6 @@
 
             results.forEach((item, index) => {
                 const delay = index * 0.1;
-                // ガチャで出た画像にも onclick="openImageModal(this.src)" を追加
                 resultGrid.innerHTML += `
                     <div class="gacha-item-wrapper">
                         <img src="${item.src}" class="gacha-item" style="animation-delay: ${delay}s" onclick="openImageModal(this.src)" onerror="this.style.display='none'; this.nextElementSibling.innerText='画像なし'">
@@ -914,12 +924,30 @@
             
             gachaImages.forEach(item => {
                 if (collectedImages.includes(item.id)) {
-                    // コレクションの画像にも onclick="openImageModal(this.src)" を追加
                     grid.innerHTML += `<img src="${item.src}" class="collection-img" title="${item.name}" onclick="openImageModal(this.src)" onerror="this.style.display='none'">`;
                 } else {
                     grid.innerHTML += `<div class="collection-locked" title="未獲得">?</div>`;
                 }
             });
+
+            // コンプリート判定と表示
+            const isCompleted = gachaImages.length > 0 && collectedImages.length >= gachaImages.length;
+            const completeMsgObj = document.getElementById('collection-complete-msg');
+
+            if (isCompleted) {
+                if (!completeMsgObj) {
+                    const colArea = document.getElementById('collection-area');
+                    const compMsg = document.createElement('div');
+                    compMsg.id = 'collection-complete-msg';
+                    compMsg.className = 'complete-message';
+                    compMsg.innerHTML = "✨ COMPLETE!! ✨";
+                    colArea.appendChild(compMsg);
+                }
+            } else {
+                if (completeMsgObj) {
+                    completeMsgObj.remove();
+                }
+            }
         }
 
         /* --- デベロッパーモード --- */
@@ -929,10 +957,8 @@
                 if (pass === "takanekokonneko") {
                     isDevMode = true;
                     localStorage.setItem('isDevMode', 'true');
-                    takanekoPoints += 100000000;
-                    saveGachaData();
                     document.getElementById('dev-settings').style.display = 'block';
-                    showModal("認証成功", "デベロッパーモードが有効になりました。\n100,000,000ptを付与しました！");
+                    showModal("認証成功", "デベロッパーモードが有効になりました。");
                 } else {
                     showModal("エラー", "パスワードが違います。");
                 }
@@ -975,7 +1001,6 @@
                 let clipHtml = '';
                 if (data.clipUrl) {
                     const videoId = getYouTubeId(data.clipUrl);
-                    // onclick="openImageModal(this.src)" を追加
                     const thumbnailHtml = videoId ? `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="サムネイル" class="video-thumbnail" onclick="openImageModal(this.src)" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">` : '';
                     clipHtml = `${thumbnailHtml}<div class="clip-container"><a href="${data.clipUrl}" target="_blank" class="action-btn">切り抜き動画を見る</a><span class="clip-time">(${data.clipSeconds})</span></div>`;
                 }
@@ -989,7 +1014,6 @@
                 const delay = index * 0.1;
                 const descText = data.explanation ? data.explanation : "説明はありません。";
                 const videoId = getYouTubeId(data.streamUrl);
-                // onclick="openImageModal(this.src)" を追加
                 const thumbnailHtml = videoId ? `<img src="https://img.youtube.com/vi/${videoId}/maxresdefault.jpg" alt="サムネイル" class="video-thumbnail" onclick="openImageModal(this.src)" onerror="this.src='https://img.youtube.com/vi/${videoId}/hqdefault.jpg'">` : '';
                 return `<div class="card" style="animation-delay: ${delay}s"><div class="card-header" onclick="this.parentElement.classList.toggle('open')"><div class="archive-basic-info"><span class="archive-title">${data.title}</span><span class="archive-date">${data.date}</span></div><span class="toggle-icon">▼</span></div><div class="details-wrapper"><div class="details-inner"><div class="details-content">${thumbnailHtml}<p><strong>ゲーム名：</strong> ${data.game}</p><p><strong>説明：</strong><br>${descText}</p><div style="text-align: center; margin-top: 20px;"><a href="${data.streamUrl}" target="_blank" class="action-btn">本編配信を見に行く</a></div></div></div></div></div>`;
             }).join('');
